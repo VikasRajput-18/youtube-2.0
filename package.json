@@ -1,12 +1,19 @@
 {
   "name": "chai_backend",
   "version": "1.0.0",
-  "description": "",
+  "type": "module",
+  "description": "a backend at chai aur code channel - youtube",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon src/index.js"
   },
-  "keywords": ["javascript" , "backend"],
+  "keywords": [
+    "javascript",
+    "backend"
+  ],
   "author": "Vikas Rajput",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
 }
