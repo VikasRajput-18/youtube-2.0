@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "a backend at chai aur code channel - youtube",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "dev": "nodemon src/index.js"
   },
