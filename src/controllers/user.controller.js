@@ -274,3 +274,65 @@ export const updateUserCoverImage = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, user, "Cover Image updated successfully"));
 });
+
+export const getUserChannelProfile = asyncHandler(async (req, res) => {
+  const { username } = req.params;
+  if (!username?.trim()) {
+    throw new ApiError(400, "Username is missing");
+  }
+  const channel = await User.aggregate([
+    {
+      // Stage 1: Match the documents with the specified 'username'
+      $match: {
+        username: username.toLowerCase(),
+      },
+    },
+    {
+      // Stage 2: Lookup the 'subscriptions' collection to find channels that are subscribed to
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "channel",
+        as: "subscriber",
+      },
+    },
+    {
+      // Stage 3: Lookup the 'subscriptions' collection to find channels that the current channel is subscribed to
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "subscriber",
+        as: "subscribedTo",
+      },
+    },
+    {
+      $addFields: {
+        subscribersCount: {
+          $size: "$subscribers",
+        },
+        channelsSubscriberToCount: {
+          $size: "$subscribedTo",
+        },
+        isSubscribed: {
+          $cond: {
+            if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        fullName: 1,
+        username: 1,
+        subscriberCount: 1,
+        channelsSubscriberToCount: 1,
+        isSubscribed: 1,
+        avatar: 1,
+        coverImage: 1,
+        email: 1,
+      },
+    },
+  ]);
+});
